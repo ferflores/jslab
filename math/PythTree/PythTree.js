@@ -125,8 +125,3 @@ function PythTree(){
 		return rgb;
 	}
 }
-
-/*window.onload = function(){
-	chaos.init("PythTree");
-
-}*/
