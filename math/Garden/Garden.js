@@ -1,7 +1,5 @@
 function Garden(){
 	var _this = null;
-	this.canvas = null;
-	this.context = null;
 	this.cx = 0;
 	this.cy = 0;
 	this.gravity = 0.02;
@@ -10,21 +8,19 @@ function Garden(){
 	this.floor = 0;
 	this.growProcLimit = 3;
 	this.seedsBeingProcessed = 0;
-	this.plants = [];
 
 	this.run = function(canvas, canvasWidth, canvasHeight){
 		_this = this;
 		_this.floor = canvas.height - 50;
-		_this.canvas = canvas;
-		_this.context = canvas.getContext("2d");
+		Garden.canvas = canvas;
+		Garden.context = canvas.getContext("2d");
 		_this.cx = canvas.width / 2;
 		_this.cy = canvas.height / 2;
-		_this.context.webkitImageSmoothingEnabled = true;
-		_this.context.lineCap = "rounded";
+		Garden.context.webkitImageSmoothingEnabled = true;
 
 		require(["../Vectors/Vector","../Particles/Particle"], function(Vectors) {
 			_this.configure();
-			setInterval(_this.main, 5);
+			setInterval(_this.main, 1);
 		});
 	}
 
@@ -36,17 +32,17 @@ function Garden(){
 	}
 
 	this.bindEvents = function(){
-		_this.canvas.addEventListener("click", function(e){
-			var mouseX = (e.pageX  - _this.canvas.offsetLeft);
-			var mouseY = (e.pageY  - _this.canvas.offsetTop);
+		Garden.canvas.addEventListener("click", function(e){
+			var mouseX = (e.pageX  - Garden.canvas.offsetLeft);
+			var mouseY = (e.pageY  - Garden.canvas.offsetTop);
 			_this.createSeed(mouseX, mouseY);
 		});
 	}
 
 	this.createSeed = function(x,y){
 		var seed = new Seed();
-		var randomX = x || Math.random()*(_this.canvas.width - (_this.canvas.width / 3)) + (_this.canvas.width / 3);
-		var randomY = y || Math.random()*(_this.canvas.height-200) + 100;
+		var randomX = x || Math.random()*(Garden.canvas.width - (Garden.canvas.width / 3)) + (Garden.canvas.width / 3);
+		var randomY = y || Math.random()*(Garden.canvas.height-200) + 100;
 		var seedSpeed = 1;
 		var seedRadious = 2;
 		var randomDirection = Math.random() * Math.PI * 2;
@@ -73,9 +69,10 @@ function Garden(){
 						var plant = new Plant();
 						var plantX = _this.seeds[x].particle.position.getX();
 						var plantY = _this.seeds[x].particle.position.getY();
-						var scaleFactor = Math.random() * _this.canvas.height/1.3 + 100;
-						plant.create(plantX, plantY, scaleFactor, Garden.initialLineWIdth, 270, 0);
-						_this.plants.push(plant);
+						var scaleFactor = Math.random() * Garden.canvas.height/1.3 + 100;
+						var plantIndex = Garden.plants.length;
+						plant.create(plantX, plantY, scaleFactor, Garden.initialLineWIdth, 270, 0,plantIndex);
+						Garden.plants.push(plant);
 
 						_this.seedsBeingProcessed--;
 						_this.seeds.splice(x,1);
@@ -83,18 +80,20 @@ function Garden(){
 					}
 				}
 			}
-			_this.seeds[x].draw(_this.context);
+			_this.seeds[x].draw(Garden.context);
 		}
 	}
 
 	this.drawPLants = function(){
-		for(var x=0;x< _this.plants.length;x++){
-			var plant = _this.plants[x];
+		for(var x=0;x< Garden.plants.length;x++){
+			var plant = Garden.plants[x];
 
-			plant.draw(_this.context);
+			if(!plant.finished){
+				plant.draw(Garden.context);
+			}
 			
 		}
-		_this.context.stroke();
+		Garden.context.stroke();
 	}
 
 	this.wrapSeed = function(seed){
@@ -108,8 +107,8 @@ function Garden(){
 			seed.particle.velocity.setY(seed.particle.velocity.getY() * _this.seedBounce);
 			seed.particle.velocity.setX(seed.particle.velocity.getX() * 0.3);
 
-		} else if(seed.particle.position.getX() + seed.radious > _this.canvas.width){
-			seed.particle.position.setX(_this.canvas.width - seed.radious);
+		} else if(seed.particle.position.getX() + seed.radious > Garden.canvas.width){
+			seed.particle.position.setX(Garden.canvas.width - seed.radious);
 			seed.particle.velocity.setX(seed.particle.velocity.getX() * -1);
 		}else if(seed.particle.position.getX() - seed.radious < 0){
 			seed.particle.position.setX(0 + seed.radious);
@@ -118,14 +117,14 @@ function Garden(){
 	}
 
 	this.drawFLoor = function(){
-		_this.context.fillStyle = "#00FF66";
-		_this.context.fillRect(0, _this.canvas.height-50, _this.canvas.width, 50 );
+		Garden.context.fillStyle = "#00FF66";
+		Garden.context.fillRect(0, Garden.canvas.height-50, Garden.canvas.width, 50 );
 	}
 	
 	this.erase = function(){
-		_this.canvas.width = _this.canvas.width;
-		_this.context.fillStyle = "#FFFFFF";
-		_this.context.fillRect(0, 0, _this.canvas.width, _this.canvas.height);
+		Garden.canvas.width = Garden.canvas.width;
+		Garden.context.fillStyle = "#000000";
+		Garden.context.fillRect(0, 0, Garden.canvas.width, Garden.canvas.height);
 	}
 
 	this.main = function(){
@@ -136,8 +135,12 @@ function Garden(){
 	}
 }
 
-Garden.maxBranchDepth = 3;
-Garden.initialLineWIdth = 4;
+Garden.plants = [];
+Garden.context = null;
+Garden.canvas = null;
+Garden.maxBranchDepth = 2;
+Garden.initialLineWIdth = 2;
+Garden.currentImageData = null;
 Garden.posNeg = [-1,1];
 
 function Seed(){
@@ -147,7 +150,7 @@ function Seed(){
 	this.floor = 0;
 	this.readyToGrow = false;
 	this.alpha = 1;
-	this.color = "rgba(0,0,0,1)";
+	this.color = "rgba(80,135,67,1)";
 
 	this.create = function(x, y, floor, speed, direction, gravity, radious){
 		this.particle = Particle.create(x,y,speed, direction, gravity);
@@ -175,12 +178,15 @@ function Plant(){
 	this.growingLength = 0;
 	this.currentY = 0;
 	this.width = 0;
+	this.finished = false;
+	this.plantIndex = 0;
 
-	this.create = function(x,y, scaleFactor, width, direction, depth){
+	this.create = function(x,y, scaleFactor, width, direction, depth, plantIndex){
 		this.x = x;
 		this.y = y;
 		this.depth = depth;
 		this.width = width;
+		this.plantIndex = plantIndex;
 
 		this.height = Math.random()*scaleFactor + 20;
 		this.direction = direction || 270;
@@ -194,7 +200,7 @@ function Plant(){
 				var randomRatio = Math.random() * this.height;
 				var branchX = Math.cos(this.direction * Math.PI / 180) * (randomRatio) + this.x;
 				var branchY = Math.sin(this.direction * Math.PI / 180) * (randomRatio) + this.y;
-				plant.create(branchX, branchY, scaleFactor / 3, this.width -1 < 1 ? 1 : this.width - 1 ,dir, this.depth+1);
+				plant.create(branchX, branchY, scaleFactor / 3, this.width -1 < 1 ? 1 : this.width - 1 ,dir, this.depth+1, plantIndex);
 				this.branches.push(plant);
 			}
 		}
@@ -203,40 +209,35 @@ function Plant(){
 	this.draw = function(context){
 
 		context.strokeStyle = this.color;
+		/*context.shadowColor = '#FFFF00';
+      	context.shadowBlur = 5;
+      	context.shadowOffsetX = 0;
+      	context.shadowOffsetY = 0;*/
+		context.lineCap = "rounded";
 
-		if(this.growingLength < this.height){
-			this.growingLength++;
-		}
 
 		var yPoint = this.currentY = Math.sin(this.direction * Math.PI / 180) * this.growingLength + this.y;
 		var xPoint = Math.cos(this.direction * Math.PI / 180) * this.growingLength + this.x;
 
-		var linesX = [];
-		var linesX2 = [];
-		var linesY = [];
-
-		for(var x = 0; x < this.width/2 ; x++){
-			linesX.push(this.x-x);
-			linesX2.push(xPoint-x);
-			linesY.push(yPoint-x);
-		}
-
-		for(var x = 0; x < this.width/2 ; x++){
-			linesX.push(this.x+x);
-			linesX2.push(xPoint+x);
-			linesY.push(yPoint+x);
-		}
-
-		for(var x=0;x< linesX.length;x++){
-			context.moveTo(linesX[x], this.y);
-			context.lineTo(linesX2[x], linesY[x]);
-		}
+		context.moveTo(this.x, this.y);
+		context.lineTo(xPoint, yPoint);
 
 		for(var y = 0; y< this.branches.length;y++){
 			if(this.currentY<this.branches[y].y){
 				this.branches[y].draw(context);
 			}
 		}
+
+		if(this.growingLength < this.height){
+			this.growingLength++;
+		}else{ 
+			if(this.depth == Garden.maxBranchDepth){
+				//this.root.finished = true;
+				Garden.plants[this.plantIndex].finished = true;
+				//Garden.currentImageData = Garden.context.getImageData(0,0,)
+			}
+		}
+		context.stroke();
 	}
 }
 
