@@ -28,6 +28,7 @@ function Asteroids(){
 
 	this.configure = function(){
 		_this.ship = Particle.create(_this.canvas.width / 2, _this.canvas.height / 2, 0 ,0);
+		_this.ship.friction = 0.99;
 		_this.thrust = Vector.create(0,0);
 		_this.bindEvents();
 	}

@@ -88,9 +88,9 @@ function Garden(){
 		for(var x=0;x< Garden.plants.length;x++){
 			var plant = Garden.plants[x];
 
-			if(!plant.finished){
+			//if(!plant.finished){
 				plant.draw(Garden.context);
-			}
+			//}
 			
 		}
 		Garden.context.stroke();
@@ -138,7 +138,7 @@ function Garden(){
 Garden.plants = [];
 Garden.context = null;
 Garden.canvas = null;
-Garden.maxBranchDepth = 2;
+Garden.maxBranchDepth = 3;
 Garden.initialLineWIdth = 2;
 Garden.currentImageData = null;
 Garden.posNeg = [-1,1];
@@ -237,7 +237,6 @@ function Plant(){
 				//Garden.currentImageData = Garden.context.getImageData(0,0,)
 			}
 		}
-		context.stroke();
 	}
 }
 
