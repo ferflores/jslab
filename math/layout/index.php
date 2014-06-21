@@ -11,9 +11,5 @@
 	<div>
 		<canvas id="canvas"></canvas>
 	</div>
-	<div id="demo-select">
-	</div>
-	<div id="demo-reset">
-	</div>
 </body>
 </html>
