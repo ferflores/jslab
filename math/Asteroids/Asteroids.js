@@ -20,8 +20,6 @@ function Asteroids(){
 			_this.cx = canvas.width / 2;
 			_this.cy = canvas.height / 2;
 			_this.configure();
-			_this.context.webkitImageSmoothingEnabled = true;
-			//_this.context.translate(.5,.5);
 			setInterval(_this.animate, 5);
 		});
 	}

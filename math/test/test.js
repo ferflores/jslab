@@ -2,44 +2,45 @@ window.onload = function(){
 	var p;
 	var friction;
 	require(["../Vectors/Vector","../Particles/Particle"], function(Vectors) {
+		var springPoint;
+		var weight;
+		var k = 0.2;
 
+		init();
 
-	init();
-
-	function init(){
-		chaos.init();
-		p = Particle.create(chaos.width / 2, chaos.height/2, 10, Math.random() * Math.PI * 2);
-		p.radious = 10;
-		p.friction = 0.97;
-		setInterval(draw, 1);
-	}
-
-	function draw(){
-		//chaos.context.translate(chaos.width*0.5,chaos.height*0.6);
-		chaos.clear();
-		/*var angle = 0;
-
-		chaos.context.moveTo(Math.cos(angle)*10, Math.sin(angle)*10);
-		while(angle <2*Math.PI){
-			angle += .01;
-			chaos.context.lineTo(Math.cos(angle)*10, Math.sin(angle)*10);
+		function init(){
+			chaos.init();
+			var canvasWidth = chaos.canvas.width;
+			var canvasHeight = chaos.canvas.height;
+			springPoint = Vector.create(canvasWidth/2, canvasHeight/2);
+			weight = Particle.create(Math.random()*canvasWidth, Math.random()*canvasHeight,50,Math.random()*Math.PI*2);
+			weight.radious = 20;
+			weight.friction = 0.9;
+			draw();
 		}
 
-		chaos.context.stroke();*/
-		/*if(p.velocity.getLength() > friction.getLength()){
-			friction.setAngle(p.velocity.getAngle());
-			p.velocity.subtractFrom(friction);
-		}else{
-			p.velocity.setLength(0);
-		}*/
+		function draw(){
+			//chaos.context.translate(chaos.width*0.5,chaos.height*0.6);
+			chaos.clear();
+			var distance = springPoint.subtract(weight.position);
+			var springForce = distance.multiply(k);
 
-		p.update();
+			weight.velocity.addTo(springForce);
+			weight.update();
 
-		chaos.context.beginPath();
-		chaos.context.arc(p.position.getX(), p.position.getY(), p.radious, 0, Math.PI * 2, false);
-		chaos.context.fill();
+			chaos.context.beginPath();
+			chaos.context.arc(weight.position.getX(), weight.position.getY(), weight.radious, 0, Math.PI*2, false);
+			chaos.context.fill();
 
+			chaos.context.beginPath();
+			chaos.context.arc(springPoint.getX(), springPoint.getY(), 4, 0, Math.PI*2, false);
+			chaos.context.fill();
 
-	}
-});
+			chaos.context.beginPath();
+			chaos.context.moveTo(weight.position.getX(), weight.position.getY());
+			chaos.context.lineTo(springPoint.getX(), springPoint.getY());
+			chaos.context.stroke();
+			requestAnimationFrame(draw);
+		}
+	});
 }
