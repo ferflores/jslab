@@ -26,9 +26,6 @@ function mAsteroids(){
 		_this.ship = new Ship();
 		_this.ship.create(_this.cx, _this.cy, Vector.create(0,0));
 		_this.bindEvents();
-		var stone = new Stone();
-		stone.create(200,200,0,0);
-		_this.enemies.push(stone);
 		_this.main();
 	}
 
@@ -114,6 +111,18 @@ function mAsteroids(){
 		}
 	}
 
+	this.generateEnemy = function(){
+		if(_this.enemies.length < 10){
+			var prob = Math.random();
+
+			if(prob < 0.02){
+				var stone = new Stone();
+				stone.create(200,200,10,2);
+				_this.enemies.push(stone);
+			}
+		}
+	}
+
 	this.main = function(){
 		_this.erase();
 
@@ -141,6 +150,7 @@ function mAsteroids(){
 
 		_this.drawBullets();
 		_this.drawEnemies();
+		_this.generateEnemy();
 
 		requestAnimationFrame(_this.main);
 	}
@@ -233,32 +243,47 @@ function mAsteroids(){
 		this.particle = null;
 		this.speed = 3;
 		this.points = [];
+		this.nPoints = 0;
+		this.angleIncrement = 0;
+		this.angleFactor = 0;
 
 		this.create = function(x,y,dir,speed){
 			this.particle = Particle.create(x,y,speed,dir);
-			var nPoints = Math.round(Math.random()*6+3);
+			this.nPoints = Math.round(Math.random()*6+3);
 
-			var angleIncrement = (Math.PI*2)/nPoints;
-			var angleFactor = Math.PI;
-			for(var i = 0; i < nPoints ; i++){
+			this.angleIncrement = (Math.PI*2)/this.nPoints;
+			this.angleFactor = Math.PI;
+
+			for(var i = 0; i < this.nPoints ; i++){
 				var randomRadious = Math.random()*25+10;
-				var randomAngle = Math.random()*((angleFactor+angleIncrement)-angleFactor)+(angleFactor);
+				var randomAngle = Math.random()*((this.angleFactor+this.angleIncrement)-this.angleFactor)+(this.angleFactor);
 				this.points.push({
 					x: Math.cos(randomAngle) * randomRadious + x,
-					y: Math.sin(randomAngle) * randomRadious + y
+					y: Math.sin(randomAngle) * randomRadious + y,
+					angle: randomAngle,
+					radious: randomRadious
 				});
-				angleFactor+=angleIncrement;
+				this.angleFactor+=this.angleIncrement;
 			}
 		}
 
 		this.draw = function(context){
+
+			this.particle.update();
 			context.strokeStyle = "#FFFFFF";
 			context.moveTo(this.points[0].x, this.points[0].y);
-			for(var x=1; x<this.points.length;x++){
-				context.lineTo(this.points[x].x, this.points[x].y);
+			for(var x=0; x<this.points.length;x++){
+				if(x>0){
+					context.lineTo(this.points[x].x, this.points[x].y);
+				}
+				this.points[x].angle += 0.05;
+				this.points[x].x = Math.cos(this.points[x].angle) * this.points[x].radious + this.particle.position.getX();
+				this.points[x].y = Math.sin(this.points[x].angle) * this.points[x].radious + this.particle.position.getY();
 			}
 			context.lineTo(this.points[0].x, this.points[0].y);
 			context.stroke();
+
+			
 		}
 	}
 
