@@ -107,18 +107,44 @@ function mAsteroids(){
 
 	this.drawEnemies = function(){
 		for(var x=0;x<_this.enemies.length;x++){
-			_this.enemies[x].draw(_this.context);
+			var enemy = _this.enemies[x];
+			enemy.draw(_this.context);
+
+			if(enemy.particle.position.getX() > 0 && enemy.particle.position.getX() < _this.canvas.width
+				&& enemy.particle.position.getY() > 0 && enemy.particle.position.getY() < _this.canvas.height
+				&& !enemy.onScreen){
+				enemy.onScreen = true;
+			}
+
+			if(enemy.particle.position.getX() < 0 || enemy.particle.position.getX() > _this.canvas.width
+				&& enemy.particle.position.getY() < 0 || enemy.particle.position.getY() > _this.canvas.height
+				&& enemy.onScreen){
+				_this.enemies.splice(x,1);
+			}
+
 		}
+
+		console.log(_this.enemies.length);
 	}
 
 	this.generateEnemy = function(){
 		if(_this.enemies.length < 10){
 			var prob = Math.random();
 
-			if(prob < 0.02){
+			if(prob < 0.01){
 				var stone = new Stone();
-				stone.create(200,200,10,2);
+				var randomAngle = Math.random()*(Math.PI*2);
+				var randomCX = Math.random()*(_this.canvas.width-_this.canvas.width/10) + _this.canvas.width / 10;
+				var randomCY = Math.random()*(_this.canvas.height-_this.canvas.height/10) + _this.canvas.height / 10;
+				var randomPosX = Math.cos(randomAngle) * (_this.canvas.width/2 + 50) + _this.cx;
+				var randomPosY = Math.sin(randomAngle) * (_this.canvas.height/2 + 50) + _this.cy;
+				var randomSpeed = Math.floor(Math.random()*3+1);
+				var dx = _this.cx - randomPosX;
+				var dy = _this.cy - randomPosY;
+				var destinationAngle = Math.atan2(dy,dx) + (Math.random > 0.5 ? Math.random()*.5 : -Math.random()*.5);
+				stone.create(randomPosX, randomPosY, randomSpeed, destinationAngle);
 				_this.enemies.push(stone);
+
 			}
 		}
 	}
@@ -246,8 +272,9 @@ function mAsteroids(){
 		this.nPoints = 0;
 		this.angleIncrement = 0;
 		this.angleFactor = 0;
+		this.onScreen = false;
 
-		this.create = function(x,y,dir,speed){
+		this.create = function(x,y,speed,dir){
 			this.particle = Particle.create(x,y,speed,dir);
 			this.nPoints = Math.round(Math.random()*6+3);
 
@@ -282,8 +309,6 @@ function mAsteroids(){
 			}
 			context.lineTo(this.points[0].x, this.points[0].y);
 			context.stroke();
-
-			
 		}
 	}
 
