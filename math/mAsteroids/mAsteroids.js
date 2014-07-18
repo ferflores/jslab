@@ -69,7 +69,9 @@ function mAsteroids(){
 					_this.turnRight = false;
 					break;
 				case 32:
-					_this.fireBullet();
+					if(_this.bullets.length< 5 ){
+						_this.fireBullet();
+					}
 					break;
 				default: 
 					break;
@@ -116,22 +118,40 @@ function mAsteroids(){
 				enemy.onScreen = true;
 			}
 
-			if(enemy.particle.position.getX() < 0 || enemy.particle.position.getX() > _this.canvas.width
-				&& enemy.particle.position.getY() < 0 || enemy.particle.position.getY() > _this.canvas.height
+			if(enemy.particle.position.getX() < 100 || enemy.particle.position.getX() > _this.canvas.width + 100
+				&& enemy.particle.position.getY() < 100 || enemy.particle.position.getY() > _this.canvas.height + 100
 				&& enemy.onScreen){
 				_this.enemies.splice(x,1);
+			return;
 			}
+
+			_this.detectCollisions(enemy, x);
 
 		}
 
-		console.log(_this.enemies.length);
+	}
+
+	this.detectCollisions = function(enemy, enemyIndex){
+
+		var distance = enemy.particle.distanceTo(_this.ship.particle);
+		if(distance < enemy.width-5){
+			console.log("game over!");
+		}
+
+		for (var i = 0; i < _this.bullets.length; i++) {
+			var bDistance = _this.bullets[i].particle.distanceTo(enemy.particle);
+			if(bDistance < enemy.width -5){
+				_this.enemies.splice(enemyIndex, 1);
+			}
+		};
+
 	}
 
 	this.generateEnemy = function(){
 		if(_this.enemies.length < 10){
 			var prob = Math.random();
 
-			if(prob < 0.01){
+			if(prob < 0.02){
 				var stone = new Stone();
 				var randomAngle = Math.random()*(Math.PI*2);
 				var randomCX = Math.random()*(_this.canvas.width-_this.canvas.width/10) + _this.canvas.width / 10;
@@ -161,9 +181,7 @@ function mAsteroids(){
 		}
 
 		_this.ship.particle.update();
-		_this.ship.draw(_this.context, _this.accelerating);
-
-		_this.context.stroke();
+		
 
 		if(_this.ship.particle.position.getX() < 0)
 			_this.ship.particle.position.setX(_this.canvas.width);
@@ -174,9 +192,12 @@ function mAsteroids(){
 		if(_this.ship.particle.position.getY() > _this.canvas.height)
 			_this.ship.particle.position.setY(0);
 
-		_this.drawBullets();
 		_this.drawEnemies();
 		_this.generateEnemy();
+
+		_this.drawBullets();
+		_this.ship.draw(_this.context, _this.accelerating);
+		_this.context.stroke();
 
 		requestAnimationFrame(_this.main);
 	}
@@ -243,6 +264,8 @@ function mAsteroids(){
 					Math.sin(this.angle) * (-this.size-5) + this.particle.position.getY()
 					);
 			}
+
+			context.closePath();
 		}
 	}
 
@@ -262,10 +285,12 @@ function mAsteroids(){
 			context.moveTo(x,y);
 			context.arc(x, y, 2, 0, 2 * Math.PI, false);
 			context.fill();
+			context.closePath();
 		}
 	}
 
 	function Stone(){
+
 		this.particle = null;
 		this.speed = 3;
 		this.points = [];
@@ -273,6 +298,8 @@ function mAsteroids(){
 		this.angleIncrement = 0;
 		this.angleFactor = 0;
 		this.onScreen = false;
+		this.width = 0;
+		this.height = 0;
 
 		this.create = function(x,y,speed,dir){
 			this.particle = Particle.create(x,y,speed,dir);
@@ -283,6 +310,10 @@ function mAsteroids(){
 
 			for(var i = 0; i < this.nPoints ; i++){
 				var randomRadious = Math.random()*25+10;
+				if(randomRadious > this.width){
+					this.width = randomRadious;
+					this.height = randomRadious;
+				}
 				var randomAngle = Math.random()*((this.angleFactor+this.angleIncrement)-this.angleFactor)+(this.angleFactor);
 				this.points.push({
 					x: Math.cos(randomAngle) * randomRadious + x,
@@ -297,7 +328,7 @@ function mAsteroids(){
 		this.draw = function(context){
 
 			this.particle.update();
-			context.strokeStyle = "#FFFFFF";
+			context.strokeStyle = "#FF0000";
 			context.moveTo(this.points[0].x, this.points[0].y);
 			for(var x=0; x<this.points.length;x++){
 				if(x>0){
@@ -309,6 +340,7 @@ function mAsteroids(){
 			}
 			context.lineTo(this.points[0].x, this.points[0].y);
 			context.stroke();
+			context.closePath();
 		}
 	}
 
