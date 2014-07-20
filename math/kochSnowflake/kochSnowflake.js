@@ -5,9 +5,9 @@ window.onload = function(){
 	init();
 
 	function init(){
-		chaos.init();
+		layout.init();
 
-		size = chaos.height * 0.5;
+		size = layout.height * 0.5;
 
 		draw();
 
@@ -19,7 +19,7 @@ window.onload = function(){
 						draw();
 						break;
 					case 80:
-						chaos.popImage();
+						layout.popImage();
 						break;
 					default:
 					break;
@@ -30,12 +30,12 @@ window.onload = function(){
 
 	function draw(){
 		var p0 ={
-			x:chaos.width * 0.32,
-			y:chaos.height * 0.28
+			x:layout.width * 0.32,
+			y:layout.height * 0.28
 		}
 		var p1 ={
-			x:chaos.width * 0.68,
-			y:chaos.height * 0.28
+			x:layout.width * 0.68,
+			y:layout.height * 0.28
 		}
 
 		var p2 ={
@@ -43,8 +43,8 @@ window.onload = function(){
 			y:p1.y + Math.sin(Math.PI * 2/3) * (p1.x - p0.x)
 		}
 
-		chaos.clear();
-		chaos.context.lineWidth = 1;
+		layout.clear();
+		layout.context.lineWidth = 1;
 
 		koch(p0, p1, maxDepth);
 		koch(p1, p2, maxDepth);
@@ -76,13 +76,13 @@ window.onload = function(){
 		};
 
 		if(depth === 0){
-			chaos.context.beginPath();
-			chaos.context.moveTo(p0.x, p0.y);
-			chaos.context.lineTo(pa.x, pa.y);
-			chaos.context.lineTo(pb.x, pb.y);
-			chaos.context.lineTo(pc.x, pc.y);
-			chaos.context.lineTo(p1.x, p1.y);
-			chaos.context.stroke();
+			layout.context.beginPath();
+			layout.context.moveTo(p0.x, p0.y);
+			layout.context.lineTo(pa.x, pa.y);
+			layout.context.lineTo(pb.x, pb.y);
+			layout.context.lineTo(pc.x, pc.y);
+			layout.context.lineTo(p1.x, p1.y);
+			layout.context.stroke();
 		}else{
 			koch(p0,pa,depth-1);
 			koch(pa,pb,depth-1);

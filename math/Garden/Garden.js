@@ -11,11 +11,11 @@ function Garden(){
 
 	this.run = function(canvas, canvasWidth, canvasHeight){
 		_this = this;
-		_this.floor = canvas.height - 50;
-		Garden.canvas = canvas;
-		Garden.context = canvas.getContext("2d");
-		_this.cx = canvas.width / 2;
-		_this.cy = canvas.height / 2;
+		_this.floor = canvas[1].height - 50;
+		Garden.canvas = canvas[1];
+		Garden.context = canvas[1].getContext("2d");
+		_this.cx = canvas[1].width / 2;
+		_this.cy = canvas[1].height / 2;
 		Garden.context.webkitImageSmoothingEnabled = true;
 
 		require(["../Vectors/Vector","../Particles/Particle"], function(Vectors) {
@@ -238,10 +238,4 @@ function Plant(){
 			}
 		}
 	}
-}
-
-
-window.onload = function(){
-	chaos.init("Garden");
-
 }

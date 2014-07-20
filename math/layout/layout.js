@@ -1,13 +1,14 @@
-var chaos = (function(){
+var layout = (function(){
 	return {
 		init: function(run){
 			this.canvas = document.getElementById("canvas");
-			this.context = this.canvas.getContext("2d");
+			this.context  = this.canvas.getContext("2d");
 			this.setSize(window.innerWidth, window.innerHeight);
 
 			if(typeof run !== "undefined" && run.length > 0){
 				var scriptClass = new window[run]();
-        		scriptClass.run(this.canvas,window.innerWidth, window.innerHeight);
+				var canvases = [null, this.canvas];
+        		scriptClass.run(canvases,window.innerWidth, window.innerHeight);
         	}
 		},
 
@@ -23,12 +24,6 @@ var chaos = (function(){
 			}else{
 				this.context.clearRect(0, 0, this.width, this.height);
 			}
-		},
-
-		popImage: function(){
-			var win = window.open("","Canvas image");
-			var src = this.canvas.toDataURL("image/png");
-			win.document.write("<img src='"+src+"' width='"+this.width+"' height='"+this.height+"'/>");
 		}
 	};
 }());

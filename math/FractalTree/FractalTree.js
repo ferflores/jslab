@@ -11,8 +11,8 @@ function FractalTree(){
 
 	this.run = function(canvas, canvasWidth, canvasHeight){
 		_this = this;
-		_this.baseSize = canvas.height * .8;
-		_this.canvasRef = canvas;
+		_this.baseSize = canvas[1].height * .8;
+		_this.canvasRef = canvas[1];
 		_this.canvasContext = _this.canvasRef.getContext("2d");
 		_this.canvasRef.style.background = "#F7F7F7";
 

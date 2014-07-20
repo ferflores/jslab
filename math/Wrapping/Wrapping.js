@@ -9,11 +9,11 @@ function Wrapping(){
 	this.run = function(canvas, canvasWidth, canvasHeight){
 		_this = this;
 		require(["../Vectors/Vector","../Particles/Particle"], function(Vectors) {
-			_this.canvas = canvas;
-			_this.context = canvas.getContext("2d");
+			_this.canvas = canvas[1];
+			_this.context = canvas[1].getContext("2d");
 			_this.context.save();
-			_this.cx = canvas.width / 2;
-			_this.cy = canvas.height / 2;
+			_this.cx = canvas[1].width / 2;
+			_this.cy = canvas[1].height / 2;
 			_this.configure();
 			setInterval(_this.animate, 5);
 		});
@@ -66,9 +66,4 @@ function Wrapping(){
 		}
 
 	}
-}
-
-window.onload = function(){
-	chaos.init("Wrapping");
-
 }

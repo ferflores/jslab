@@ -7,9 +7,9 @@ window.onload = function(){
 	init();
 
 	function init(){
-		chaos.init();
+		layout.init();
 
-		baseSize = chaos.height * .8;
+		baseSize = layout.height * .8;
 
 		draw();
 
@@ -21,7 +21,7 @@ window.onload = function(){
 						draw();
 						break;
 					case 80:
-						chaos.popImage();
+						layout.popImage();
 						break;
 					default:
 					break;
@@ -31,24 +31,24 @@ window.onload = function(){
 	}
 
 	function draw(){
-		chaos.clear();
-		chaos.context.save();
-		chaos.context.translate(chaos.width*0.5,chaos.height*0.9);
+		layout.clear();
+		layout.context.save();
+		layout.context.translate(layout.width*0.5,layout.height*0.9);
 		drawTree(maxDepth, baseSize, 0);
-		chaos.context.restore();
+		layout.context.restore();
 	}
 
 	function drawTree(depth , size, angle){
 		//draw trunk
 		angles = [-Math.PI/2 * Math.random(), Math.PI/2 * Math.random()];
 		scaleFactor = .55 + Math.random() * .25;
-		chaos.context.save();
-		chaos.context.rotate(angle);
-		chaos.context.beginPath();
-		chaos.context.moveTo(0,0);
-		chaos.context.lineTo(0, -size*(1 - scaleFactor));
-		chaos.context.stroke();
-		chaos.context.translate(0,-size*(1 - scaleFactor));
+		layout.context.save();
+		layout.context.rotate(angle);
+		layout.context.beginPath();
+		layout.context.moveTo(0,0);
+		layout.context.lineTo(0, -size*(1 - scaleFactor));
+		layout.context.stroke();
+		layout.context.translate(0,-size*(1 - scaleFactor));
 
 		if(depth === 0){
 			drawBranch(size * scaleFactor, angles[0], depth);
@@ -58,18 +58,18 @@ window.onload = function(){
 			drawTree(depth-1, size * scaleFactor, angles[1]);
 		}
 
-		chaos.context.restore();
+		layout.context.restore();
 	}
 
 	function drawBranch(size, angle, depth){
-		chaos.context.save();
-		chaos.context.rotate(angle);
-		chaos.context.strokeStyle = ColorLuminance("1C5700", .8 );
-		chaos.context.beginPath();
-		chaos.context.moveTo(0,0);
-		chaos.context.lineTo(0, -size);
-		chaos.context.stroke();
-		chaos.context.restore();
+		layout.context.save();
+		layout.context.rotate(angle);
+		layout.context.strokeStyle = ColorLuminance("1C5700", .8 );
+		layout.context.beginPath();
+		layout.context.moveTo(0,0);
+		layout.context.lineTo(0, -size);
+		layout.context.stroke();
+		layout.context.restore();
 	}
 
 	function ColorLuminance(hex, lum) {

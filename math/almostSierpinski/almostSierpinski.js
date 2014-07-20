@@ -10,9 +10,9 @@ window.onload = function(){
 	init();
 
 	function init(){
-		chaos.init();
+		layout.init();
 
-		size = chaos.height / 8;
+		size = layout.height / 8;
 		dist = size * 1.4;
 
 		draw();
@@ -25,7 +25,7 @@ window.onload = function(){
 						draw();
 						break;
 					case 80:
-						chaos.popImage();
+						layout.popImage();
 						break;
 					default:
 					break;
@@ -35,34 +35,34 @@ window.onload = function(){
 	}
 
 	function draw(){
-		chaos.clear();
-		chaos.context.save();
-		chaos.context.translate(chaos.width*0.5,chaos.height*0.6);
+		layout.clear();
+		layout.context.save();
+		layout.context.translate(layout.width*0.5,layout.height*0.6);
 		drawShape();
 		iterate(maxDepth);
-		chaos.context.restore();
+		layout.context.restore();
 	}
 
 	function iterate(depth){
 		for(var i = 0; i<numShapes; i++){
-			chaos.context.save();
-			chaos.context.rotate(angles[i]);
-			chaos.context.translate(dist,0);
-			chaos.context.scale(scaleFactor, scaleFactor);
+			layout.context.save();
+			layout.context.rotate(angles[i]);
+			layout.context.translate(dist,0);
+			layout.context.scale(scaleFactor, scaleFactor);
 			drawShape(depth);
 			if(depth>0){
 				iterate(depth-1);
 			}
 
-			chaos.context.restore();
+			layout.context.restore();
 		}
 	}
 
 	function drawShape(depth){
-		chaos.context.fillStyle = colors[maxDepth-depth];
-		chaos.context.beginPath();
-		chaos.context.arc(0,0,size*Math.random(),0,Math.PI*2, false); //ultimo cambio aqui quitar random y queda la flor
-		chaos.context.fill();
+		layout.context.fillStyle = colors[maxDepth-depth];
+		layout.context.beginPath();
+		layout.context.arc(0,0,size*Math.random(),0,Math.PI*2, false); //ultimo cambio aqui quitar random y queda la flor
+		layout.context.fill();
 
 	}
 }

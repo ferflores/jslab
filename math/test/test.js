@@ -9,9 +9,9 @@ window.onload = function(){
 		init();
 
 		function init(){
-			chaos.init();
-			var canvasWidth = chaos.canvas.width;
-			var canvasHeight = chaos.canvas.height;
+			layout.init();
+			var canvasWidth = layout.canvas.width;
+			var canvasHeight = layout.canvas.height;
 			springPoint = Vector.create(canvasWidth/2, canvasHeight/2);
 			weight = Particle.create(Math.random()*canvasWidth, Math.random()*canvasHeight,50,Math.random()*Math.PI*2);
 			weight.radious = 20;
@@ -20,26 +20,26 @@ window.onload = function(){
 		}
 
 		function draw(){
-			//chaos.context.translate(chaos.width*0.5,chaos.height*0.6);
-			chaos.clear();
+			//layout.context.translate(layout.width*0.5,layout.height*0.6);
+			layout.clear();
 			var distance = springPoint.subtract(weight.position);
 			var springForce = distance.multiply(k);
 
 			weight.velocity.addTo(springForce);
 			weight.update();
 
-			chaos.context.beginPath();
-			chaos.context.arc(weight.position.getX(), weight.position.getY(), weight.radious, 0, Math.PI*2, false);
-			chaos.context.fill();
+			layout.context.beginPath();
+			layout.context.arc(weight.position.getX(), weight.position.getY(), weight.radious, 0, Math.PI*2, false);
+			layout.context.fill();
 
-			chaos.context.beginPath();
-			chaos.context.arc(springPoint.getX(), springPoint.getY(), 4, 0, Math.PI*2, false);
-			chaos.context.fill();
+			layout.context.beginPath();
+			layout.context.arc(springPoint.getX(), springPoint.getY(), 4, 0, Math.PI*2, false);
+			layout.context.fill();
 
-			chaos.context.beginPath();
-			chaos.context.moveTo(weight.position.getX(), weight.position.getY());
-			chaos.context.lineTo(springPoint.getX(), springPoint.getY());
-			chaos.context.stroke();
+			layout.context.beginPath();
+			layout.context.moveTo(weight.position.getX(), weight.position.getY());
+			layout.context.lineTo(springPoint.getX(), springPoint.getY());
+			layout.context.stroke();
 			requestAnimationFrame(draw);
 		}
 	});

@@ -9,30 +9,30 @@ window.onload = function(){
 	init();
 
 	function init(){
-		chaos.init();
-		cx = chaos.width / 2;
-		cy = chaos.height / 2;
+		layout.init();
+		cx = layout.width / 2;
+		cy = layout.height / 2;
 		drawCircle();
-		chaos.context.scale(10,10);
-		chaos.context.translate(20,20);
+		layout.context.scale(10,10);
+		layout.context.translate(20,20);
 		drawCircle();
 		setInterval(oscilate, 1);
 	}
 
 	function drawCircle(){
-		//chaos.clear();
-		chaos.context.beginPath();
-		chaos.context.arc(cx, cy, 1, 0, Math.PI*2, false);
-		chaos.context.fill();
+		//layout.clear();
+		layout.context.beginPath();
+		layout.context.arc(cx, cy, 1, 0, Math.PI*2, false);
+		layout.context.fill();
 	}
 
 	function oscilate(){
 		var y = cy + Math.sin(angle) * offset;
 
-		chaos.clear();
-		chaos.context.beginPath();
-		chaos.context.arc(cx, y, 50, 0, Math.PI*2, false);
-		chaos.context.fill();
+		layout.clear();
+		layout.context.beginPath();
+		layout.context.arc(cx, y, 50, 0, Math.PI*2, false);
+		layout.context.fill();
 
 		angle += speed;
 	}

@@ -9,9 +9,9 @@ window.onload = function(){
 	init();
 
 	function init(){
-		chaos.init();
+		layout.init();
 
-		size = chaos.height * 0.5;
+		size = layout.height * 0.5;
 		posMatrixTrans = [[0,0],[boxSize/3,0],[boxSize/3*2,0],[boxSize/3*2,boxSize/3],
 					     [boxSize/3*2,boxSize/3*2],[boxSize/3,boxSize/3*2],
 						 [0,boxSize/3*2],[0,boxSize/3]];
@@ -26,7 +26,7 @@ window.onload = function(){
 						draw();
 						break;
 					case 80:
-						chaos.popImage();
+						layout.popImage();
 						break;
 					default:
 					break;
@@ -36,25 +36,25 @@ window.onload = function(){
 	}
 
 	function draw(){
-		chaos.clear();
-		chaos.context.save();
-		chaos.context.translate(chaos.width * 0.35, chaos.height * 0.25);
-		chaos.context.scale(size,size);
+		layout.clear();
+		layout.context.save();
+		layout.context.translate(layout.width * 0.35, layout.height * 0.25);
+		layout.context.scale(size,size);
 		drawCarpet(maxDepth);
-		chaos.context.restore();
+		layout.context.restore();
 	}
 
 	function drawCarpet(depth){
 		if(depth===0){
-			chaos.context.fillRect(0, 0, boxSize, boxSize);
+			layout.context.fillRect(0, 0, boxSize, boxSize);
 		}else{
 			for(var x=0; x< posMatrixTrans.length; x++){
 
-				chaos.context.save();
-				chaos.context.translate(posMatrixTrans[x][0], posMatrixTrans[x][1]);
-				chaos.context.scale(0.33333,0.33333);
+				layout.context.save();
+				layout.context.translate(posMatrixTrans[x][0], posMatrixTrans[x][1]);
+				layout.context.scale(0.33333,0.33333);
 				drawCarpet(depth-1);
-				chaos.context.restore();
+				layout.context.restore();
 			}
 		}
 	}
