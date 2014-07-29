@@ -18,7 +18,7 @@ function Garden(){
 		_this.cy = canvas[1].height / 2;
 		Garden.context.webkitImageSmoothingEnabled = true;
 
-		require(["../Vectors/Vector","../Particles/Particle"], function(Vectors) {
+		require(["../Vectors/Vector","../ParticlesOpt/Particle"], function(Vectors) {
 			_this.configure();
 			setInterval(_this.main, 1);
 		});
@@ -67,8 +67,8 @@ function Garden(){
 					_this.seeds[x].color = "rgba(0,0,0,"+_this.seeds[x].alpha+")";
 					if(_this.seeds[x].alpha <= 0){
 						var plant = new Plant();
-						var plantX = _this.seeds[x].particle.position.getX();
-						var plantY = _this.seeds[x].particle.position.getY();
+						var plantX = _this.seeds[x].particle.x;
+						var plantY = _this.seeds[x].particle.y;
 						var scaleFactor = Math.random() * Garden.canvas.height/1.3 + 100;
 						var plantIndex = Garden.plants.length;
 						plant.create(plantX, plantY, scaleFactor, Garden.initialLineWIdth, 270, 0,plantIndex);
@@ -97,22 +97,22 @@ function Garden(){
 	}
 
 	this.wrapSeed = function(seed){
-		if(seed.particle.position.getY() + seed.radious > seed.floor){
-			if(seed.particle.velocity.getY() < 0.050){
+		if(seed.particle.y + seed.radious > seed.floor){
+			if(seed.particle.vy < 0.050){
 				seed.stopped = true;
 				return;
 			}
 
-			seed.particle.position.setY(seed.floor - seed.radious);
-			seed.particle.velocity.setY(seed.particle.velocity.getY() * _this.seedBounce);
-			seed.particle.velocity.setX(seed.particle.velocity.getX() * 0.3);
+			seed.particle.y = seed.floor - seed.radious;
+			seed.particle.vy *= _this.seedBounce;
+			seed.particle.vx *= 0.3;
 
-		} else if(seed.particle.position.getX() + seed.radious > Garden.canvas.width){
-			seed.particle.position.setX(Garden.canvas.width - seed.radious);
-			seed.particle.velocity.setX(seed.particle.velocity.getX() * -1);
-		}else if(seed.particle.position.getX() - seed.radious < 0){
-			seed.particle.position.setX(0 + seed.radious);
-			seed.particle.velocity.setX(seed.particle.velocity.getX() * -1);
+		} else if(seed.particle.x + seed.radious > Garden.canvas.width){
+			seed.particle.x = Garden.canvas.width - seed.radious;
+			seed.particle.vx  *= -1;
+		}else if(seed.particle.x - seed.radious < 0){
+			seed.particle.x = 0 + seed.radious;
+			seed.particle.vx *= -1;
 		}
 	}
 
@@ -161,8 +161,8 @@ function Seed(){
 	this.draw = function(context){
 		context.fillStyle = this.color;
 		context.beginPath();
-		context.arc(this.particle.position.getX(), 
-			this.particle.position.getY(),this.radious,0,Math.PI*2,false);
+		context.arc(this.particle.x, 
+			this.particle.y,this.radious,0,Math.PI*2,false);
 		context.fill();
 	}
 }

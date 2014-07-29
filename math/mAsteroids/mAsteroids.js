@@ -132,7 +132,7 @@ function mAsteroids(){
 				enemy.onScreen = true;
 			}
 
-			if(enemy.particle.position.getX() < 100 || enemy.particle.position.getX() > _this.canvas.width + 100
+			if(enemy.particle.position.getX() < -100 || enemy.particle.position.getX() > _this.canvas.width + 100
 				&& enemy.particle.position.getY() < 100 || enemy.particle.position.getY() > _this.canvas.height + 100
 				&& enemy.onScreen){
 				_this.enemies.splice(x,1);
