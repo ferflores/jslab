@@ -5,7 +5,8 @@ function Colors(){
 	this.cx = 0;
 	this.cy = 0;
 	this.circles = [];
-	this.counter = 0;
+	this.currentAngle = 0;
+	this.stopped = false;
 
 	this.run = function(canvas, canvasWidth, canvasHeight){
 		_this = this;
@@ -17,7 +18,7 @@ function Colors(){
 	}
 
 	this.configure = function(){
-		require(["../Utils/Color/Hex"], function(ColorUtil) {
+		require(["../Utils/Color/Hex","../Vectors/Vector","../Particles/Particle"], function(ColorUtil) {
 			_this.context.fillStyle = "#000000";
 			_this.context.fillRect(0, 0, _this.canvas.width, _this.canvas.height);
 			_this.createCircle();
@@ -26,7 +27,7 @@ function Colors(){
 	}
 
 	this.stop = function(){
-
+		_this.stopped = true;
 	}
 
 	this.reset =function(){
@@ -39,9 +40,6 @@ function Colors(){
 	}
 
 	this.erase = function(){
-		/*_this.canvas.width = _this.canvas.width;
-		_this.context.fillStyle = "#000000";
-		_this.context.fillRect(0, 0, _this.canvas.width, _this.canvas.height);*/
 		
 	}
 
@@ -63,7 +61,8 @@ function Colors(){
 		for (var i = 0; i < _this.circles.length; i++) {
 			var circle = _this.circles[i];
 			circle.draw(_this.context);
-			if(circle.spiralRadious > (_this.canvas.width > _this.canvas.height ? _this.canvas.width : _this.canvas.height)){
+			if(circle.particle.position.getY()< 0 - circle.radious || circle.particle.position.getY()> (_this.canvas.height+circle.radious)
+				|| circle.particle.position.getX() < 0 - circle.radious || circle.particle.position.getX()> (_this.canvas.width+circle.radious) ){
 				_this.circles.splice(i,1);
 			}
 		};
@@ -74,36 +73,38 @@ function Colors(){
 		circle.radious = 30;
 		circle.color = _this.getRandomColor();
 		circle.nextColor = _this.getRandomColor();
-		circle.x = _this.cx;
-		circle.y = _this.cy;
+		circle.particle = Particle.create(_this.cx, _this.cy, 5, _this.currentAngle,0.02);
+
 		_this.circles.push(circle);
+		_this.currentAngle+=0.1;
+		if(_this.currentAngle>Math.PI*2){
+			_this.currentAngle = 0;
+		}
 	}
 
 	this.main = function(){
 		_this.erase();
 		_this.drawCircles();
 
-		_this.counter++;
-		if(_this.counter>500){
-			_this.createCircle();
-			_this.counter = 0;
-		}
+		_this.createCircle();
+		_this.counter = 0;
 
-		requestAnimationFrame(_this.main);
+		if(!_this.stopped){
+			requestAnimationFrame(_this.main);
+		}
 	}
 
 	function Circle(){
 		this.color = "#FFFFFF";
 		this.nextColor = "#000000";
-		this.x = 0;
-		this.y = 0;
 		this.radious = 0;
-		this.angle = 0;
-		this.spiralRadious = 0;
+		this.particle = null;
 
 		this.draw = function(context){
-			var x = Math.cos(this.angle) * this.spiralRadious + _this.cx;
-			var y = Math.sin(this.angle) * this.spiralRadious + _this.cy;
+			var x = this.particle.position.getX();
+			var y = this.particle.position.getY();
+
+			this.particle.update();
 
 			context.fillStyle = this.color;
 			context.beginPath();
@@ -112,18 +113,10 @@ function Colors(){
 			context.closePath();
 			context.fill();
 
-			if(this.angle >= Math.PI*2){
-				this.angle = 0;
-			}
-
-			var distance = Math.sqrt((y-_this.cy) * (y -_this.cy) + (x-_this.cx) * (x -_this.cx));
-
-			this.angle += 0.08;
-			this.spiralRadious += 0.08
-			this.radious += 0.01;
+			this.radious += 0.3;
 
 			if(this.color.toLowerCase() != this.nextColor.toLowerCase()){
-				this.color = Hex.fadeToColor(this.color, this.nextColor, 1);
+				this.color = Hex.fadeToColor(this.color, this.nextColor, 5);
 			}else{
 				this.nextColor = _this.getRandomColor();
 			}
