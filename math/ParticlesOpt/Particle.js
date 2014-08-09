@@ -1,4 +1,4 @@
-var Particle = {
+var Particle2 = {
 	x: 0,
 	y: 0,
 	vx: 0,
