@@ -9,6 +9,7 @@
 </head>
 <body>
 	<div>
+		<canvas id="canvasBg"></canvas>
 		<canvas id="canvas"></canvas>
 	</div>
 	<script type="text/javascript">

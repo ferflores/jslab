@@ -34,35 +34,7 @@ function test(){
 
 		var cont = _this.context;
 
-		var point1 = {x: 200, y:200};
-		var point2 = {x: 300, y:-200};
-		var point3 = {x: 400, y:200};
-
-		cont.save();
-		cont.translate(300,200);
-		cont.rotate(Math.PI*2*1.1);
 		
-
-		cont.beginPath();
-		cont.moveTo(point1.x, point1.y);
-		cont.quadraticCurveTo(point2.x, point2.y, point3.x, point3.y);
-		cont.stroke();
-
-		cont.restore();
-
-		var point4 = {x: 500, y:200};
-		var point5 = {x: 600, y:-200};
-		var point6 = {x: 700, y:200};
-
-		cont.beginPath();
-		cont.moveTo(point4.x, point4.y);
-		cont.quadraticCurveTo(point5.x, point5.y, point6.x, point6.y);
-		cont.stroke();
-
-		cont.save();
-		cont.translate(300,200);
-		cont.rotate(Math.PI*2/3);
-		cont.restore();
 
 		requestAnimationFrame(_this.draw);
 	}

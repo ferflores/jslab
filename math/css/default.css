@@ -1,7 +1,11 @@
 html, body{
 	margin:0px;
+	background-color: #3D3D3D;
 }
 
 canvas {
 	display: block;
+	position: absolute;
+	top: 0px;
+	left: 0px;
 }
