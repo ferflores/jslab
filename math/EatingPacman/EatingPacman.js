@@ -7,7 +7,6 @@ function EatingPacman(){
 	this.canvas = null;
 	this.canvasBg = null;
 	this.pacmans = [];
-	this.drawing = false;
 
 	this.run = function(canvas, canvasWidth, canvasHeight){
 		_this = this;
@@ -28,8 +27,11 @@ function EatingPacman(){
 		_this.erase();
 		_this.bindEvents();
 		var pacman = new Pacman();
-		pacman.create(200,100);
+		pacman.create(200,100, false);
+		var pacman2 = new Pacman();
+		pacman2.create(600,100, true);
 		_this.pacmans.push(pacman);
+		_this.pacmans.push(pacman2);
 	}
 
 	this.drawPacmans = function(){
@@ -38,28 +40,15 @@ function EatingPacman(){
 			_this.pacmans[i].particle.update();
 		};
 	}
-
 	this.bindEvents = function(){
-		document.addEventListener("mousedown", function(e){
+		document.addEventListener("mouseup",function(e){
 			var mX = (e.pageX  - _this.canvas.offsetParent.offsetLeft);
 			var mY = (e.pageY  - _this.canvas.offsetParent.offsetTop);
-			_this.drawing = true;
-			_this.contextBg.moveTo(mX,mY);
-		});
-
-		document.addEventListener("mousemove", function(e){
-			if(_this.drawing){
-				var mX = (e.pageX  - _this.canvas.offsetParent.offsetLeft);
-				var mY = (e.pageY  - _this.canvas.offsetParent.offsetTop);
-				var bgc = _this.contextBg;
-				bgc.lineWidth = 10;
-				bgc.lineTo(mX, mY);
-				bgc.stroke();
-			}
-		});
-
-		document.addEventListener("mouseup", function(e){
-			_this.drawing = false;
+			var bgc = _this.contextBg;
+			bgc.globalCompositeOperation = 'source-over';
+			bgc.beginPath();
+			bgc.arc(mX, mY, Math.random()*50+30,Math.PI*2,false);
+			bgc.fill();
 		});
 	}
 
@@ -92,21 +81,78 @@ function EatingPacman(){
 		}
 	}
 
+
+	this.scanBlack = function(scanReverse){
+
+		var posx = 0;
+		var posy = 0;
+
+		var width = _this.canvas.width;
+		var height = _this.canvas.height;
+
+		posx = 0;
+		posy = 0;
+
+		imageData = _this.contextBg.getImageData(0, 0,width, height);
+
+		if(scanReverse){
+			posx = width;
+			posy = height;
+			for (var i = imageData.data.length-1; i > 4; i-=4) {
+				var pixel = imageData.data[i];
+
+				if(posx <= 0){
+					posx = width;
+					posy--;
+				}
+
+				if(pixel>0){
+					return {posx:posx, posy: posy};
+				}
+
+				posx--;
+			}
+		}else{
+			for (var i = 3; i < imageData.data.length; i+=4) {
+				var pixel = imageData.data[i];
+				
+				if(posx > width-1){
+					posx = 0;
+					posy++;
+				}
+
+				if(pixel>0){
+					return {posx:posx, posy: posy};
+				}
+
+				posx ++;
+			}
+		}
+
+		return null;
+	}
+
 	function Pacman(){
 		this.particle = null;
 		this.radious = 10;
 		this.bitTime = 100;
-		this.time = new Date().getTime();
+		this.lastBitTime = new Date().getTime();
 		this.openMouth = true;
 		this.angle = 0;
+		this.scanTime = 200;
+		this.lastScanTime = new Date().getTime();
+		this.chasing = false;
+		this.scanReverse = false;
 
-		this.create = function(x,y){
+		this.create = function(x,y, scanReverse){
 			this.particle = Particle2.create(x,y,0,this.angle);
-			this.radious = Math.random()*20+10;
+			this.radious = 15;
+			this.scanReverse = scanReverse;
 		}
 
 		this.draw = function(){
 			var c = _this.context;
+			var c2 = _this.contextBg;
 
 			c.save();
 			c.translate(this.particle.x, this.particle.y);
@@ -114,14 +160,42 @@ function EatingPacman(){
 
 			c.fillStyle = "#FFFFFF";
 			c.beginPath();
-			c.moveTo(this.particle.x, this.particle.y);
 			c.arc(0, 0,this.radious,0,Math.PI*2,false);
 			c.fill();
 
+			if(!_this.drawing){
+				c2.fillStyle="rgba(0,0,0,1)";
+				c2.lineWidth=1;
+				c2.globalCompositeOperation = 'destination-out';
+				c2.beginPath();
+				c2.arc(this.particle.x, this.particle.y, this.radious,Math.PI*2,false);
+				c2.fill();
+			}
+
 			var currentTime = new Date().getTime();
 
-			if(currentTime - this.time > this.bitTime){
-				this.time = currentTime;
+			var nextPoint = null;
+			if(currentTime - this.lastScanTime > this.scanTime){
+				this.lastScanTime = currentTime;
+				nextPoint = _this.scanBlack(this.scanReverse);
+				if(nextPoint!=null){
+					var dy = (nextPoint.posy) -this.particle.y;
+					var dx = (nextPoint.posx) - this.particle.x;
+					var newAngle = Math.atan2(dy,dx);
+					this.particle.setSpeed(6);
+					this.particle.setHeading(newAngle);
+					
+					this.angle = newAngle;
+
+					var distance = Math.sqrt(dy*dy + dx*dx);
+				}else{
+					this.particle.setSpeed(0);
+
+				}
+			}
+
+			if(currentTime - this.lastBitTime > this.bitTime){
+				this.lastBitTime = currentTime;
 				this.openMouth = !this.openMouth;
 			}
 
